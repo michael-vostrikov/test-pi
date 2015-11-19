@@ -6,21 +6,42 @@ use ParallelLibrary\interfaces\ICommunicable;
 use ParallelLibrary\interfaces\IMessage;
 use ParallelLibrary\Message;
 
+/**
+ * Messaging system which allows some processes to communicate between each other using PHP streams
+ */
 class StreamMessagingStrategy implements ICommunicable
 {
+    /**
+     * Delimiter which signs the end oof message
+     */
     const MESSAGE_DELIMITER = "\r\n";
 
 
+    /**
+     * Stream which the messages will be read from
+     */
     private $inputStream;
+
+    /**
+     * Stream which the messages will be write to
+     */
     private $outputStream;
 
 
+    /**
+     * @param resource $inputStream stream which the messages will be read from
+     * @param resource $outputStream stream which the messages will be write to
+     */
     public function __construct($inputStream, $outputStream)
     {
         $this->inputStream = $inputStream;
         $this->outputStream = $outputStream;
     }
 
+    /**
+     * Sends the message into output stream
+     * @inheritdoc
+     */
     public function sendMessage(IMessage $message)
     {
         $fileHandle = $this->outputStream;
@@ -35,6 +56,10 @@ class StreamMessagingStrategy implements ICommunicable
         return true;
     }
 
+    /**
+     * Receives the message from input stream
+     * @inheritdoc
+     */
     public function receiveMessage()
     {
         $fileHandle = $this->inputStream;
