@@ -77,14 +77,14 @@ class PiCalculationWorkerManager extends WorkerManager
         if (!$worker->isRunning()) {
             $state = $worker->getState();
             if (!$state) {
-                $state = $worker->receiveMessage($waitForMessage = false);
+                $state = $worker->receiveMessage();
             }
 
             return $state;
         }
 
         $worker->sendMessage(self::MESSAGE_GET_STATE);
-        $state = $worker->receiveMessage($waitForMessage = false);
+        $state = $worker->receiveMessage();
         $worker->setState($state);
 
         return $state;

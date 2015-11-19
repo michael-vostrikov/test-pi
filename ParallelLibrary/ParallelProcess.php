@@ -25,10 +25,9 @@ class ParallelProcess
         return $this->messagingStrategy->receiveMessage();
     }
 
-    public function checkMessages()
+    public function processMessages()
     {
-        $message = $this->receiveMessage();
-        if ($message) {
+        while ($message = $this->receiveMessage()) {
             $this->handleMessage($message);
         }
     }

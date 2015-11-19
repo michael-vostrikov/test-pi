@@ -40,16 +40,17 @@ class PiCalculationProcess extends ParallelProcess
         $this->circleHitCount = 0;
         $this->iterationCount = $iterationCount;
         for ($i = 1; $i <= $this->iterationCount; $i++) {
-            $this->currentIteration = $i;
-            $this->checkMessages();
-
-
             $x = mt_rand() / mt_getrandmax();
             $y = mt_rand() / mt_getrandmax();
 
             if (self::inCircle($x, $y)) {
                 $this->circleHitCount++;
             }
+
+
+            // for better performance we can check messages not on every iteration, but e.g. on every 1000 iteration
+            $this->currentIteration = $i;
+            $this->processMessages();
         }
 
         $this->sendState();
