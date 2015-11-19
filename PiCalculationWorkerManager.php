@@ -56,7 +56,7 @@ class PiCalculationWorkerManager extends WorkerManager
         }
         $timeDiff = microtime(true) - $this->startTime;
 
-        echo $timeDiff .' ' .$pi .'<br>';
+        echo 'time: ' .$timeDiff .' | ' .'pi: ' .$pi .'<br>';
     }
 
     protected function handleMessage(Worker $worker, Message $message)
