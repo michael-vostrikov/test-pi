@@ -30,7 +30,7 @@ class Worker implements IWorker, ICommunicable
     private $process;
 
     /**
-     * @var ICommunicable implementation of messaging strategy
+     * @var \ParallelLibrary\interfaces\ICommunicable implementation of messaging strategy
      * which allows the parent and child processes to communicate between each other
      */
     private $messagingStrategy;

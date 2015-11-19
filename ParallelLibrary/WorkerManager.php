@@ -101,7 +101,7 @@ abstract class WorkerManager implements IWorkerManager
     }
 
     /**
-     * Check and handle all messages which come from child processes
+     * Gets and handle all messages which come from child processes
      * The function handleMessage() is called for every message
      */
     protected function handleWorkerMessages()
