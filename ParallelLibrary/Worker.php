@@ -90,6 +90,7 @@ class Worker implements IWorker, ICommunicable
 
 
     /**
+     * Sends the message to child process using messaging strategy
      * @inheritdoc
      */
     public function sendMessage(IMessage $message)
@@ -98,6 +99,7 @@ class Worker implements IWorker, ICommunicable
     }
 
     /**
+     * Receives the message from child process using messaging strategy
      * @inheritdoc
      */
     public function receiveMessage()
