@@ -19,11 +19,11 @@ class PiCalculationWorkerManager extends WorkerManager
 
     protected function getWorkerCommand($_workerID)
     {
-        $processFile = __DIR__ .'/start-pi-calculation-process.php';
+        $startupScript = __DIR__ .'/start-child-process.php';
+        $processsClass = 'PiCalculationProcess';
         $iterationCount = $this->getIterationCount();
-        $arguments = $iterationCount;
 
-        return 'php ' .$processFile .' ' .$arguments;
+        return 'php ' .$startupScript .' ' .$processsClass .' ' .$iterationCount;
     }
 
     protected function doWork()
@@ -50,6 +50,7 @@ class PiCalculationWorkerManager extends WorkerManager
 
         echo $timeDiff .' ' .$pi .'<br>';
     }
+
 
     private function setupOutput()
     {
