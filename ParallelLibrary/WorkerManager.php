@@ -8,6 +8,7 @@ use ParallelLibrary\interfaces\IWorker;
 use ParallelLibrary\interfaces\IMessage;
 
 /**
+ * Represents parent process in multi-process computing
  * Creates and manages workers
  * For using it you have to extends from it and implement all abstract methods
  * Any protected methods can be overriden for implementing specific functionality
