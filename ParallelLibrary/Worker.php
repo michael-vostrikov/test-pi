@@ -8,7 +8,7 @@ use ParallelLibrary\interfaces\ICommunicable;
 
 /**
  * Represents child process in the parent process
- * Used for creation and controlling child process
+ * Used for creating and controlling child process
  */
 class Worker implements IWorker, ICommunicable
 {
@@ -28,6 +28,12 @@ class Worker implements IWorker, ICommunicable
      * @var resource Child process handle
      */
     private $process;
+
+    /**
+     * @var ICommunicable implementation of messaging strategy
+     * which allows the parent and child processes to communicate between each other
+     */
+    private $messagingStrategy;
 
 
     /**
