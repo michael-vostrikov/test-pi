@@ -7,11 +7,13 @@ class PiCalculationWorkerManager extends WorkerManager
     const MESSAGE_GET_STATE = 'GET_STATE';
 
     private $startTime;
+    private $workerState;
 
 
     protected function runWork()
     {
         $this->startTime = microtime(true);
+        $this->workerState = [];
         $this->setupOutput();
 
         parent::runWork();
@@ -33,8 +35,12 @@ class PiCalculationWorkerManager extends WorkerManager
 
         $totalCircleHitCount = 0;
         $totalCount = 0;
-        foreach ($this->workerList as $worker)
-        {
+        foreach ($this->workerList as $worker) {
+
+            if ($worker->isRunning()) {
+                $worker->sendMessage(self::MESSAGE_GET_STATE);
+            }
+
             $workerState = $this->getWorkerState($worker);
             if (!$workerState) continue;
 
@@ -49,6 +55,11 @@ class PiCalculationWorkerManager extends WorkerManager
         $timeDiff = microtime(true) - $this->startTime;
 
         echo $timeDiff .' ' .$pi .'<br>';
+    }
+
+    protected function handleMessage($worker, $message)
+    {
+        $this->workerState[$worker->getID()] = $message;
     }
 
 
@@ -74,19 +85,11 @@ class PiCalculationWorkerManager extends WorkerManager
 
     private function getWorkerState($worker)
     {
-        if (!$worker->isRunning()) {
-            $state = $worker->getState();
-            if (!$state) {
-                $state = $worker->receiveMessage();
-            }
-
-            return $state;
+        $workerID = $worker->getID();
+        if (isset($this->workerState[$workerID])) {
+            return $this->workerState[$workerID];
         }
 
-        $worker->sendMessage(self::MESSAGE_GET_STATE);
-        $state = $worker->receiveMessage();
-        $worker->setState($state);
-
-        return $state;
+        return null;
     }
 }

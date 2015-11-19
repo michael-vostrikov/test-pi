@@ -38,6 +38,7 @@ abstract class WorkerManager
     protected function runWork()
     {
         while ($this->canWork()) {
+            $this->handleWorkersMessages();
             $this->doWork();
         }
     }
@@ -46,7 +47,7 @@ abstract class WorkerManager
     {
         $canWork = false;
 
-        foreach ($this->workerList as $i => $worker) {
+        foreach ($this->workerList as $worker) {
             if ($worker->isRunning()) {
                 $canWork = true;
                 break;
@@ -56,6 +57,16 @@ abstract class WorkerManager
         return $canWork;
     }
 
+    protected function handleWorkersMessages()
+    {
+        foreach ($this->workerList as $worker) {
+            while ($message = $worker->receiveMessage()) {
+                $this->handleMessage($worker, $message);
+            }
+        }
+    }
+
+    abstract protected function handleMessage($worker, $message);
     abstract protected function doWork();
     abstract protected function getWorkerCommand($workerID);
 }

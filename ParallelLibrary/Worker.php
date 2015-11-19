@@ -10,7 +10,6 @@ class Worker
 
     private $id;
     private $process;
-    private $state;
 
 
     public function __construct($id)
@@ -20,7 +19,7 @@ class Worker
 
     public function run($command)
     {
-        $streams = $this->createStreams();
+        $streams = $this->createPipeStreams();
 
         $process = proc_open($command, $streams['processSideStreams'], $pipes, null, null);
         if (!is_resource($process)) {
@@ -44,6 +43,11 @@ class Worker
         return proc_get_status($this->process);
     }
 
+    public function getID()
+    {
+        return $this->id;
+    }
+
     public function sendMessage($message)
     {
         return $this->messagingStrategy->sendMessage($message);
@@ -54,18 +58,8 @@ class Worker
         return $this->messagingStrategy->receiveMessage();
     }
 
-    public function getState()
-    {
-        return $this->state;
-    }
 
-    public function setState($state)
-    {
-        $this->state = $state;
-    }
-
-
-    private function createStreams()
+    private function createPipeStreams()
     {
         $id = $this->id;
         $fileNames = [
