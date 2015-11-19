@@ -1,10 +1,12 @@
 <?php
 
 use ParallelLibrary\WorkerManager;
+use ParallelLibrary\Worker;
+use ParallelLibrary\Message;
 
 class PiCalculationWorkerManager extends WorkerManager
 {
-    const MESSAGE_GET_STATE = 'GET_STATE';
+    const MESSAGE_TYPE_GET_STATE = 'GET_STATE';
 
     private $startTime;
     private $workerState;
@@ -38,7 +40,7 @@ class PiCalculationWorkerManager extends WorkerManager
         foreach ($this->workerList as $worker) {
 
             if ($worker->isRunning()) {
-                $worker->sendMessage(self::MESSAGE_GET_STATE);
+                $worker->sendMessage(new Message(self::MESSAGE_TYPE_GET_STATE));
             }
 
             $workerState = $this->getWorkerState($worker);
@@ -57,9 +59,17 @@ class PiCalculationWorkerManager extends WorkerManager
         echo $timeDiff .' ' .$pi .'<br>';
     }
 
-    protected function handleMessage($worker, $message)
+    protected function handleMessage(Worker $worker, Message $message)
     {
-        $this->workerState[$worker->getID()] = $message;
+        switch ($message->type) {
+
+            case self::MESSAGE_TYPE_GET_STATE:
+                $this->workerState[$worker->getID()] = $message->data;
+                break;
+
+            default:
+                break;
+        }
     }
 
 

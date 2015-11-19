@@ -17,7 +17,7 @@ class StreamMessagingStrategy
         $this->outputStream = $outputStream;
     }
 
-    public function sendMessage($message)
+    public function sendMessage(Message $message)
     {
         $fileHandle = $this->outputStream;
         $serializedMessage = json_encode($message) .self::MESSAGE_DELIMITER;
@@ -31,15 +31,17 @@ class StreamMessagingStrategy
         return true;
     }
 
-    public function receiveMessage($waitForMessage = false)
+    public function receiveMessage()
     {
         $fileHandle = $this->inputStream;
-        fseek($fileHandle, 0, SEEK_CUR);
+        fseek($fileHandle, 0, SEEK_CUR);                // reset EOF info
         $serializedMessage = fgets($fileHandle);
 
         $message = null;
         if (strpos($serializedMessage, self::MESSAGE_DELIMITER) !== false) {
-            $message = json_decode($serializedMessage, true);
+            $messageParams = json_decode($serializedMessage, true);
+
+            $message = new Message($messageParams['type'], $messageParams['data']);
         }
 
         return $message;

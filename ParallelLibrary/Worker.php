@@ -48,7 +48,7 @@ class Worker
         return $this->id;
     }
 
-    public function sendMessage($message)
+    public function sendMessage(Message $message)
     {
         return $this->messagingStrategy->sendMessage($message);
     }

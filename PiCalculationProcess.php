@@ -1,10 +1,11 @@
 <?php
 
 use ParallelLibrary\ParallelProcess;
+use ParallelLibrary\Message;
 
 class PiCalculationProcess extends ParallelProcess
 {
-    const MESSAGE_GET_STATE = 'GET_STATE';
+    const MESSAGE_TYPE_GET_STATE = 'GET_STATE';
 
     private $iterationCount;
     private $currentIteration;
@@ -19,19 +20,6 @@ class PiCalculationProcess extends ParallelProcess
 
         $iterationCount = (int)$arguments[0];
         $this->calculatePiByMonteCarloMethod($iterationCount);
-    }
-
-    public function handleMessage($message)
-    {
-        switch ($message) {
-
-            case self::MESSAGE_GET_STATE:
-                $this->sendState();
-                break;
-
-            default:
-                break;
-        }
     }
 
 
@@ -61,6 +49,20 @@ class PiCalculationProcess extends ParallelProcess
         return (($x * $x + $y * $y) < 1.0);
     }
 
+
+    public function handleMessage(Message $message)
+    {
+        switch ($message->type) {
+
+            case self::MESSAGE_TYPE_GET_STATE:
+                $this->sendState();
+                break;
+
+            default:
+                break;
+        }
+    }
+
     private function sendState()
     {
         $state = [
@@ -68,6 +70,6 @@ class PiCalculationProcess extends ParallelProcess
             'currentIteration' => $this->currentIteration,
             'circleHitCount' => $this->circleHitCount,
         ];
-        $this->sendMessage($state);
+        $this->sendMessage(new Message(self::MESSAGE_TYPE_GET_STATE, $state));
     }
 }

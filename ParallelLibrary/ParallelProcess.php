@@ -15,7 +15,7 @@ class ParallelProcess
     {
     }
 
-    public function sendMessage($message)
+    public function sendMessage(Message $message)
     {
         return $this->messagingStrategy->sendMessage($message);
     }
@@ -32,7 +32,7 @@ class ParallelProcess
         }
     }
 
-    public function handleMessage($message)
+    public function handleMessage(Message $message)
     {
     }
 }
