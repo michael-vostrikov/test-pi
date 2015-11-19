@@ -41,6 +41,7 @@ abstract class WorkerManager
             $this->handleWorkerMessages();
             $this->doWork();
         }
+        $this->handleWorkerMessages();
     }
 
     protected function canWork()
