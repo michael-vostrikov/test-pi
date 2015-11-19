@@ -6,21 +6,41 @@ use ParallelLibrary\interfaces\IWorker;
 use ParallelLibrary\interfaces\IMessage;
 use ParallelLibrary\interfaces\ICommunicable;
 
+/**
+ * Represents child process in the parent process
+ * Used for creation and controlling child process
+ */
 class Worker implements IWorker, ICommunicable
 {
+    /**
+     * Pipe IDs
+     */
     const STDIN  = 0;
     const STDOUT = 1;
     const STDERR = 2;
 
+    /**
+     * @var int internal ID. Usually it is index in worker list
+     */
     private $internalID;
+
+    /**
+     * @var resource Child process handle
+     */
     private $process;
 
 
+    /**
+     * @param int $internalID some number for identifying worker
+     */
     public function __construct($internalID)
     {
         $this->internalID = $internalID;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function run($command)
     {
         $streams = $this->createPipeStreams();
@@ -36,34 +56,59 @@ class Worker implements IWorker, ICommunicable
         return true;
     }
 
+
+    /**
+     * @inheritdoc
+     */
+    public function getInternalID()
+    {
+        return $this->internalID;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getProcessInfo()
     {
         return proc_get_status($this->process);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function isRunning()
     {
         $processInfo = $this->getProcessInfo();
         return $processInfo['running'];
     }
 
-    public function getInternalID()
-    {
-        return $this->internalID;
-    }
 
-
+    /**
+     * @inheritdoc
+     */
     public function sendMessage(IMessage $message)
     {
         return $this->messagingStrategy->sendMessage($message);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function receiveMessage()
     {
         return $this->messagingStrategy->receiveMessage();
     }
 
 
+    /**
+     * Creates the pipes to be used for process communication
+     * @return array
+     * [
+     *     'processSideStreams' => [self::STDIN => resource(read),  self::STDOUT => resource(write), self::STDERR => resource(write)],
+     *     'workerSideStreams'  => [self::STDIN => resource(write), self::STDOUT => resource(read),  self::STDERR => resource(read)],
+     * ]
+     * If the stream in processSideStreams is opened for read, then related stream in workerSideStreams is opened for write
+     */
     private function createPipeStreams()
     {
         $id = $this->internalID;
@@ -95,11 +140,17 @@ class Worker implements IWorker, ICommunicable
         return $streams;
     }
 
-    private function openFile($filename, $mode)
+    /**
+     * Opens the file
+     * @param string $fileName file name for opening
+     * @param string $mode mode for function fopen()
+     * @return resource file handle
+     */
+    private function openFile($fileName, $mode)
     {
-        $fileHandle = fopen($filename, $mode);
+        $fileHandle = fopen($fileName, $mode);
         if ($fileHandle === false) {
-            throw new ParallelLibraryException("Cannot open file '$filename' with mode '$mode'");
+            throw new ParallelLibraryException("Cannot open file '$fileName' with mode '$mode'");
         }
 
         return $fileHandle;
