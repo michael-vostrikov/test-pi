@@ -7,7 +7,7 @@ class PingPongProcess extends ParallelProcess
 {
     const MESSAGE_TYPE_PING = 'PING';
     const MESSAGE_TYPE_PONG = 'PONG';
-    const MESSAGE_TYPE_TIRED = 'Sorry, I am tired';
+    const MESSAGE_TYPE_TIRED = "I am tired, let's stop";
 
     private $currentCount;
     private $maxCount;
