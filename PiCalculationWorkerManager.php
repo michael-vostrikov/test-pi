@@ -8,15 +8,6 @@ class PiCalculationWorkerManager extends WorkerManager
 
     private $startTime;
 
-    private function setupOutput()
-    {
-        ini_set('output_buffering', 'off');
-        ini_set('zlib.output_compression', false);
-        ini_set('implicit_flush', true);
-        ob_implicit_flush(true);
-        while (@ob_end_clean());
-        set_time_limit(-1);
-    }
 
     protected function runWork()
     {
@@ -60,17 +51,25 @@ class PiCalculationWorkerManager extends WorkerManager
         echo $timeDiff .' ' .$pi .'<br>';
     }
 
-    protected function getIterationCount()
+    private function setupOutput()
+    {
+        ini_set('output_buffering', 'off');
+        ini_set('zlib.output_compression', false);
+        ini_set('implicit_flush', true);
+        ob_implicit_flush(true);
+        while (@ob_end_clean());
+        set_time_limit(-1);
+    }
+
+    private function getIterationCount()
     {
         return rand(100000, 200000);
     }
 
-    protected function getWaitingTime()
+    private function getWaitingTime()
     {
         return rand(1*1000000, 2*1000000);
     }
-
-
 
     private function getWorkerState($worker)
     {

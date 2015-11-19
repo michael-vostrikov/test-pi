@@ -1,8 +1,8 @@
 <?php
 
-use ParallelLibrary\Process;
+use ParallelLibrary\ParallelProcess;
 
-class PiCalculationProcess extends Process
+class PiCalculationProcess extends ParallelProcess
 {
     private $iterationCount;
     private $currentIteration;

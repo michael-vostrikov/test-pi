@@ -8,5 +8,7 @@ $processClass = 'PiCalculationProcess';
 $arguments = $argv;
 array_shift($arguments);
 
-$process = new $processClass();
+
+$messagingStrategy = new \ParallelLibrary\StreamMessagingStrategy(STDIN, STDOUT);
+$process = new $processClass($messagingStrategy);
 $process->run($arguments);

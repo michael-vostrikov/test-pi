@@ -8,24 +8,13 @@ class Worker
     const STDOUT = 1;
     const STDERR = 2;
 
-    const MESSAGE_DELIMITER = "\r\n";
-
-
     private $id;
     private $process;
-    private $workerStreams;
-
     private $state;
 
 
-    private $config = [
-        'timeout' => 2000000,
-    ];
-
-
-    public function __construct($id, $config = [])
+    public function __construct($id)
     {
-        $this->config = array_replace_recursive($this->config, $config);
         $this->id = $id;
     }
 
@@ -35,12 +24,12 @@ class Worker
         do {
             $streams = $this->createStreams();
 
-            $process = proc_open($command, $streams['processStreams'], $pipes, null, null);
+            $process = proc_open($command, $streams['processSideStreams'], $pipes, null, null);
             if (!is_resource($process)) {
                 throw new ParallelLibraryException("Cannot start child process. Command: $command");
             }
             $this->process = $process;
-            $this->workerStreams = $streams['workerStreams'];
+            $this->messagingStrategy = new StreamMessagingStrategy($streams['workerSideStreams'][self::STDOUT], $streams['workerSideStreams'][self::STDIN]);
 
             $res = true;
         } while (false);
@@ -54,7 +43,33 @@ class Worker
         return $processInfo['running'];
     }
 
-    protected function createStreams()
+    public function getProcessInfo()
+    {
+        return proc_get_status($this->process);
+    }
+
+    public function sendMessage($message)
+    {
+        return $this->messagingStrategy->sendMessage($message);
+    }
+
+    public function receiveMessage()
+    {
+        return $this->messagingStrategy->receiveMessage();
+    }
+
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    public function setState($state)
+    {
+        $this->state = $state;
+    }
+
+
+    private function createStreams()
     {
         $id = $this->id;
         $fileNames = [
@@ -70,12 +85,12 @@ class Worker
         }
 
         $streams = [
-            'processStreams' => [
+            'processSideStreams' => [
                 self::STDIN  => $fileHandles['read'][self::STDIN],
                 self::STDOUT => $fileHandles['write'][self::STDOUT],
                 self::STDERR => $fileHandles['write'][self::STDERR],
             ],
-            'workerStreams'  => [
+            'workerSideStreams'  => [
                 self::STDIN  => $fileHandles['write'][self::STDIN],
                 self::STDOUT => $fileHandles['read'][self::STDOUT],
                 self::STDERR => $fileHandles['read'][self::STDERR],
@@ -85,7 +100,7 @@ class Worker
         return $streams;
     }
 
-    protected function openFile($filename, $mode)
+    private function openFile($filename, $mode)
     {
         $fileHandle = fopen($filename, $mode);
         if ($fileHandle === false) {
@@ -93,64 +108,5 @@ class Worker
         }
 
         return $fileHandle;
-    }
-
-    public function getProcessInfo()
-    {
-        return proc_get_status($this->process);
-    }
-
-    public function sendMessage($message)
-    {
-        $fileHandle = $this->workerStreams[self::STDIN];
-        $serializedMessage = json_encode($message) .self::MESSAGE_DELIMITER;
-        $res = fwrite($fileHandle, $serializedMessage);
-        fflush($fileHandle);
-
-        if ($res === false) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function receiveMessage($waitForMessage = false)
-    {
-        $fileHandle = $this->workerStreams[self::STDOUT];
-        fseek($fileHandle, 0, SEEK_CUR);
-        $serializedMessage = fgets($fileHandle);
-
-        if (strpos($serializedMessage, self::MESSAGE_DELIMITER) === false && $waitForMessage) {
-            $millisecondsInSecond = 1000000.0;
-            $timeoutInSeconds = ((int)$this->config['timeout']) / $millisecondsInSecond;
-
-            $startTime = microtime(true);
-            while (microtime(true) - $startTime < $timeoutInSeconds) {
-                fseek($fileHandle, 0, SEEK_CUR);
-                $serializedMessage = fgets($fileHandle);
-                if ($serializedMessage) {
-                    break;
-                }
-
-                usleep(1000);
-            }
-        }
-
-        $message = null;
-        if (strpos($serializedMessage, self::MESSAGE_DELIMITER) !== false) {
-            $message = json_decode($serializedMessage, true);
-        }
-
-        return $message;
-    }
-
-    public function getState()
-    {
-        return $this->state;
-    }
-
-    public function setState($state)
-    {
-        $this->state = $state;
     }
 }

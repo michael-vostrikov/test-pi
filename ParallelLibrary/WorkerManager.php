@@ -7,10 +7,6 @@ abstract class WorkerManager
     protected $workerList = [];
 
     protected $config = [
-        'workerConfig' => [
-            'timeout' => 2000000,
-        ],
-
         'workerClassName' => '',
         'workerCount' => 0,
     ];
@@ -47,7 +43,7 @@ abstract class WorkerManager
 
     protected function createWorker($id)
     {
-        return new $this->config['workerClassName']($id, $this->config['workerConfig']);
+        return new $this->config['workerClassName']($id);
     }
 
     protected function canWork()
