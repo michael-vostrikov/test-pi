@@ -1,7 +1,7 @@
 <?php
 
 use ParallelLibrary\WorkerManager;
-use ParallelLibrary\Worker;
+use ParallelLibrary\interfaces\IWorker;
 use ParallelLibrary\Message;
 
 class PiCalculationWorkerManager extends WorkerManager
@@ -59,12 +59,12 @@ class PiCalculationWorkerManager extends WorkerManager
         echo 'time: ' .$timeDiff .' | ' .'pi: ' .$pi .'<br>';
     }
 
-    protected function handleMessage(Worker $worker, Message $message)
+    protected function handleMessage(IWorker $worker, Message $message)
     {
         switch ($message->type) {
 
             case self::MESSAGE_TYPE_GET_STATE:
-                $this->workerState[$worker->getID()] = $message->data;
+                $this->workerState[$worker->getInternalID()] = $message->data;
                 break;
 
             default:
@@ -93,9 +93,9 @@ class PiCalculationWorkerManager extends WorkerManager
         return rand(1*1000000, 2*1000000);
     }
 
-    private function getWorkerState($worker)
+    private function getWorkerState(IWorker $worker)
     {
-        $workerID = $worker->getID();
+        $workerID = $worker->getInternalID();
         if (isset($this->workerState[$workerID])) {
             return $this->workerState[$workerID];
         }

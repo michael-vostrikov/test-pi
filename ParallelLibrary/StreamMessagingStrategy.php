@@ -2,7 +2,9 @@
 
 namespace ParallelLibrary;
 
-class StreamMessagingStrategy
+use ParallelLibrary\interfaces\ICommunicable;
+
+class StreamMessagingStrategy implements ICommunicable
 {
     const MESSAGE_DELIMITER = "\r\n";
 
@@ -34,7 +36,7 @@ class StreamMessagingStrategy
     public function receiveMessage()
     {
         $fileHandle = $this->inputStream;
-        fseek($fileHandle, 0, SEEK_CUR);                // reset EOF info
+        fseek($fileHandle, 0, SEEK_CUR);                // reset EOF information
         $serializedMessage = fgets($fileHandle);
 
         $message = null;

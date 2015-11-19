@@ -2,11 +2,14 @@
 
 namespace ParallelLibrary;
 
-class ParallelProcess
+use ParallelLibrary\interfaces\ICommunicable;
+use ParallelLibrary\interfaces\IParallelProcess;
+
+abstract class ParallelProcess implements IParallelProcess
 {
     private $messagingStrategy;
 
-    public function __construct($messagingStrategy)
+    public function __construct(ICommunicable $messagingStrategy)
     {
         $this->messagingStrategy = $messagingStrategy;
     }
@@ -25,14 +28,12 @@ class ParallelProcess
         return $this->messagingStrategy->receiveMessage();
     }
 
-    public function processMessages()
+    protected function processMessages()
     {
         while ($message = $this->receiveMessage()) {
             $this->handleMessage($message);
         }
     }
 
-    public function handleMessage(Message $message)
-    {
-    }
+    abstract protected function handleMessage(Message $message);
 }

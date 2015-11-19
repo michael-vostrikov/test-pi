@@ -1,7 +1,7 @@
 <?php
 
 use ParallelLibrary\WorkerManager;
-use ParallelLibrary\Worker;
+use ParallelLibrary\interfaces\IWorker;
 use ParallelLibrary\Message;
 
 class PingPongWorkerManager extends WorkerManager
@@ -32,9 +32,9 @@ class PingPongWorkerManager extends WorkerManager
     {
     }
 
-    protected function handleMessage(Worker $worker, Message $message)
+    protected function handleMessage(IWorker $worker, Message $message)
     {
-        echo 'Receive: '.$message->type.' (workerID = '.$worker->getID().')<br>';
+        echo 'Receive: '.$message->type.' (workerID = '.$worker->getInternalID().')<br>';
 
         switch ($message->type) {
 
@@ -51,7 +51,7 @@ class PingPongWorkerManager extends WorkerManager
     {
         $message = new Message(self::MESSAGE_TYPE_PING);
         $worker->sendMessage($message);
-        echo 'Send: '.$message->type.' (workerID = '.$worker->getID().')<br>';
+        echo 'Send: '.$message->type.' (workerID = '.$worker->getInternalID().')<br>';
     }
 
     private function setupOutput()

@@ -2,10 +2,12 @@
 
 namespace ParallelLibrary;
 
-class WorkerFactory
+use ParallelLibrary\interfaces\IWorkerFactory;
+
+class WorkerFactory implements IWorkerFactory
 {
-    public function createWorker($id)
+    public function createWorker($workerID)
     {
-        return new Worker($id);
+        return new Worker($workerID);
     }
 }

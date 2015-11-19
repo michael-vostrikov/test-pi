@@ -2,19 +2,22 @@
 
 namespace ParallelLibrary;
 
-class Worker
+use ParallelLibrary\interfaces\IWorker;
+use ParallelLibrary\interfaces\ICommunicable;
+
+class Worker implements IWorker, ICommunicable
 {
     const STDIN  = 0;
     const STDOUT = 1;
     const STDERR = 2;
 
-    private $id;
+    private $internalID;
     private $process;
 
 
-    public function __construct($id)
+    public function __construct($internalID)
     {
-        $this->id = $id;
+        $this->internalID = $internalID;
     }
 
     public function run($command)
@@ -32,21 +35,22 @@ class Worker
         return true;
     }
 
+    public function getProcessInfo()
+    {
+        return proc_get_status($this->process);
+    }
+
     public function isRunning()
     {
         $processInfo = $this->getProcessInfo();
         return $processInfo['running'];
     }
 
-    public function getProcessInfo()
+    public function getInternalID()
     {
-        return proc_get_status($this->process);
+        return $this->internalID;
     }
 
-    public function getID()
-    {
-        return $this->id;
-    }
 
     public function sendMessage(Message $message)
     {
@@ -61,7 +65,7 @@ class Worker
 
     private function createPipeStreams()
     {
-        $id = $this->id;
+        $id = $this->internalID;
         $fileNames = [
             self::STDIN  => $id.'-in.pipe.txt',
             self::STDOUT => $id.'-out.pipe.txt',

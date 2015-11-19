@@ -2,7 +2,11 @@
 
 namespace ParallelLibrary;
 
-abstract class WorkerManager
+use ParallelLibrary\interfaces\IWorkerManager;
+use ParallelLibrary\interfaces\IWorkerFactory;
+use ParallelLibrary\interfaces\IWorker;
+
+abstract class WorkerManager implements IWorkerManager
 {
     protected $workerList = [];
     protected $workerFactory;
@@ -12,7 +16,7 @@ abstract class WorkerManager
     ];
 
 
-    public function __construct($config = [], $workerFactory)
+    public function __construct($config = [], IWorkerFactory $workerFactory)
     {
         $this->config = array_replace_recursive($this->config, $config);
         $this->workerFactory = $workerFactory;
@@ -67,7 +71,7 @@ abstract class WorkerManager
         }
     }
 
-    abstract protected function handleMessage(Worker $worker, Message $message);
+    abstract protected function handleMessage(IWorker $worker, Message $message);
     abstract protected function doWork();
     abstract protected function getWorkerCommand($workerID);
 }
