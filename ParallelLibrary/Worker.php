@@ -20,21 +20,17 @@ class Worker
 
     public function run($command)
     {
-        $res = false;
-        do {
-            $streams = $this->createStreams();
+        $streams = $this->createStreams();
 
-            $process = proc_open($command, $streams['processSideStreams'], $pipes, null, null);
-            if (!is_resource($process)) {
-                throw new ParallelLibraryException("Cannot start child process. Command: $command");
-            }
-            $this->process = $process;
-            $this->messagingStrategy = new StreamMessagingStrategy($streams['workerSideStreams'][self::STDOUT], $streams['workerSideStreams'][self::STDIN]);
+        $process = proc_open($command, $streams['processSideStreams'], $pipes, null, null);
+        if (!is_resource($process)) {
+            throw new ParallelLibraryException("Cannot start child process. Command: $command");
+        }
 
-            $res = true;
-        } while (false);
+        $this->process = $process;
+        $this->messagingStrategy = new StreamMessagingStrategy($streams['workerSideStreams'][self::STDOUT], $streams['workerSideStreams'][self::STDIN]);
 
-        return $res;
+        return true;
     }
 
     public function isRunning()

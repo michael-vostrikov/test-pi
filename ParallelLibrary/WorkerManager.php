@@ -5,16 +5,17 @@ namespace ParallelLibrary;
 abstract class WorkerManager
 {
     protected $workerList = [];
+    protected $workerFactory;
 
     protected $config = [
-        'workerClassName' => '',
         'workerCount' => 0,
     ];
 
 
-    public function __construct($config = [])
+    public function __construct($config = [], $workerFactory)
     {
         $this->config = array_replace_recursive($this->config, $config);
+        $this->workerFactory = $workerFactory;
     }
 
     public function run()
@@ -27,7 +28,7 @@ abstract class WorkerManager
     protected function runWorkers()
     {
         for ($i = 0; $i < (int)$this->config['workerCount']; $i++) {
-            $worker = $this->createWorker($i);
+            $worker = $this->workerFactory->createWorker($i);
             if ($worker->run($this->getWorkerCommand($i))) {
                 $this->workerList[] = $worker;
             }
@@ -39,11 +40,6 @@ abstract class WorkerManager
         while ($this->canWork()) {
             $this->doWork();
         }
-    }
-
-    protected function createWorker($id)
-    {
-        return new $this->config['workerClassName']($id);
     }
 
     protected function canWork()
