@@ -5,6 +5,7 @@ namespace ParallelLibrary;
 use ParallelLibrary\interfaces\IWorkerManager;
 use ParallelLibrary\interfaces\IWorkerFactory;
 use ParallelLibrary\interfaces\IWorker;
+use ParallelLibrary\interfaces\IMessage;
 
 abstract class WorkerManager implements IWorkerManager
 {
@@ -71,7 +72,7 @@ abstract class WorkerManager implements IWorkerManager
         }
     }
 
-    abstract protected function handleMessage(IWorker $worker, Message $message);
+    abstract protected function handleMessage(IWorker $worker, IMessage $message);
     abstract protected function doWork();
     abstract protected function getWorkerCommand($workerID);
 }

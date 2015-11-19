@@ -3,6 +3,8 @@
 namespace ParallelLibrary;
 
 use ParallelLibrary\interfaces\ICommunicable;
+use ParallelLibrary\interfaces\IMessage;
+use ParallelLibrary\Message;
 
 class StreamMessagingStrategy implements ICommunicable
 {
@@ -19,7 +21,7 @@ class StreamMessagingStrategy implements ICommunicable
         $this->outputStream = $outputStream;
     }
 
-    public function sendMessage(Message $message)
+    public function sendMessage(IMessage $message)
     {
         $fileHandle = $this->outputStream;
         $serializedMessage = json_encode($message) .self::MESSAGE_DELIMITER;

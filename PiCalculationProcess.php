@@ -1,7 +1,9 @@
 <?php
 
 use ParallelLibrary\ParallelProcess;
+use ParallelLibrary\interfaces\IMessage;
 use ParallelLibrary\Message;
+
 
 class PiCalculationProcess extends ParallelProcess
 {
@@ -50,7 +52,7 @@ class PiCalculationProcess extends ParallelProcess
     }
 
 
-    public function handleMessage(Message $message)
+    public function handleMessage(IMessage $message)
     {
         switch ($message->type) {
 

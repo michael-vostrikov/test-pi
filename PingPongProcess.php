@@ -1,6 +1,7 @@
 <?php
 
 use ParallelLibrary\ParallelProcess;
+use ParallelLibrary\interfaces\IMessage;
 use ParallelLibrary\Message;
 
 class PingPongProcess extends ParallelProcess
@@ -31,7 +32,7 @@ class PingPongProcess extends ParallelProcess
         $this->sendMessage(new Message(self::MESSAGE_TYPE_TIRED));
     }
 
-    public function handleMessage(Message $message)
+    public function handleMessage(IMessage $message)
     {
         switch ($message->type) {
 

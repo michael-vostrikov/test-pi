@@ -2,6 +2,7 @@
 
 use ParallelLibrary\WorkerManager;
 use ParallelLibrary\interfaces\IWorker;
+use ParallelLibrary\interfaces\IMessage;
 use ParallelLibrary\Message;
 
 class PiCalculationWorkerManager extends WorkerManager
@@ -59,7 +60,7 @@ class PiCalculationWorkerManager extends WorkerManager
         echo 'time: ' .$timeDiff .' | ' .'pi: ' .$pi .'<br>';
     }
 
-    protected function handleMessage(IWorker $worker, Message $message)
+    protected function handleMessage(IWorker $worker, IMessage $message)
     {
         switch ($message->type) {
 

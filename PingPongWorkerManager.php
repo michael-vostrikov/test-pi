@@ -2,6 +2,7 @@
 
 use ParallelLibrary\WorkerManager;
 use ParallelLibrary\interfaces\IWorker;
+use ParallelLibrary\interfaces\IMessage;
 use ParallelLibrary\Message;
 
 class PingPongWorkerManager extends WorkerManager
@@ -32,7 +33,7 @@ class PingPongWorkerManager extends WorkerManager
     {
     }
 
-    protected function handleMessage(IWorker $worker, Message $message)
+    protected function handleMessage(IWorker $worker, IMessage $message)
     {
         echo 'Receive: '.$message->type.' (workerID = '.$worker->getInternalID().')<br>';
 

@@ -3,6 +3,7 @@
 namespace ParallelLibrary;
 
 use ParallelLibrary\interfaces\IWorker;
+use ParallelLibrary\interfaces\IMessage;
 use ParallelLibrary\interfaces\ICommunicable;
 
 class Worker implements IWorker, ICommunicable
@@ -52,7 +53,7 @@ class Worker implements IWorker, ICommunicable
     }
 
 
-    public function sendMessage(Message $message)
+    public function sendMessage(IMessage $message)
     {
         return $this->messagingStrategy->sendMessage($message);
     }
